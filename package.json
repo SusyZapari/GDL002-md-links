@@ -2,7 +2,8 @@
   "name": "md-links",
   "version": "0.1.0",
   "dependencies": {
-    "jest": "^24.7.1"
+    "jest": "^24.7.1",
+    "markdown-it": "^8.4.2"
   },
   "description": "## Preámbulo",
   "main": "index.js",
@@ -16,6 +17,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SusyZapari/GDL002-md-links.git"
+  },
+  "bin": {
+    "md-links": "./mdlinks.js"
   },
   "author": "Susana Zapari",
   "license": "ISC",

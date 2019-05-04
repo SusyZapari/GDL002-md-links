@@ -1,6 +1,58 @@
 const fs = require("fs");
 const path = require("path");
+const md = require('markdown-it')();
+
 module.exports = {
+// funcion principal
+mdLinks: function(path, options) {
+  // array to return
+  const result = [];
+  // data from the md file
+  const fileData = this.readingFile(path);
+  // Array of rows from the md file
+  const tokens = md.parse(fileData)[1];
+  
+  // Iterate the array of rows
+  for(let i = 0; i < tokens.children.length; i++) {
+    // store the row in the token constant
+    const token = tokens.children[i];
+    // Look for an opening tag: <a>
+    if (token.tag == 'a' && token.type == 'link_open') {
+      // If we found an openning tag the next token contains the text
+      const nextToken = tokens.children[i + 1];
+      const linkText = nextToken.content;
+
+      // get the href attribute from the 'a' tag in the attrs array
+      const href = token.attrs.map(
+        function(attribute) {
+          // the link value comes in the second element
+          return attribute[1];
+        }
+      );
+      
+      // create the link object
+      const linkObject = this.createLinkObject(href[0], linkText, path);
+      // add the object to the result array
+      result.push(linkObject);
+    }
+  }
+
+  // return the promise with the array of links
+  return new Promise(
+    (resolve, reject) => {
+      resolve(result);
+  });
+},
+
+// function to create the object that will be returned in the promise array
+createLinkObject: function (hrefParam, textParam, fileParam) {
+  return {
+    href : hrefParam,
+    text : textParam,
+    file : fileParam,
+  }
+},
+
 //funcion que verifica si el campo esta vacio
 pathInserted: function(pathFile){
   if(pathFile == undefined){
@@ -43,9 +95,9 @@ pathMd: function(pathFile){
 
 //Leer el archivo
 readingFile:function(pathFile) {
-let file =fs.readFileSync(pathFile, "utf-8");
-console.log(file);
-return true;
+  // To do: call validation methods(pathMd, pathDirectory,pathWorking,pathInserted)
+  let file = fs.readFileSync(pathFile, "utf-8");
+  return file;
 },
 
 // Extraer links //
